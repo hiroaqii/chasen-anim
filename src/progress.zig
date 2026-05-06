@@ -14,6 +14,16 @@ pub fn progress(frame: u64, max_frame: u64) f32 {
     return @as(f32, @floatFromInt(frame)) / @as(f32, @floatFromInt(max_frame));
 }
 
+/// Return the looping index for `frame`.
+///
+/// This is useful when a fixed list of frames should repeat forever, such as
+/// spinner glyphs. Empty sequences return zero so callers can decide how to
+/// handle missing frame data at the draw site.
+pub fn loopIndex(frame: u64, len: usize) usize {
+    if (len == 0) return 0;
+    return @intCast(frame % len);
+}
+
 test "progress returns normalized frame progress" {
     try std.testing.expectEqual(@as(f32, 0.0), progress(0, 10));
     try std.testing.expectEqual(@as(f32, 0.5), progress(5, 10));
@@ -31,4 +41,18 @@ test "progress treats zero max frame as complete" {
 
 test "progress treats the first frame as complete for one-frame duration" {
     try std.testing.expectEqual(@as(f32, 1.0), progress(1, 1));
+}
+
+test "loopIndex wraps through a fixed length" {
+    try std.testing.expectEqual(@as(usize, 0), loopIndex(0, 3));
+    try std.testing.expectEqual(@as(usize, 1), loopIndex(1, 3));
+    try std.testing.expectEqual(@as(usize, 2), loopIndex(2, 3));
+    try std.testing.expectEqual(@as(usize, 0), loopIndex(3, 3));
+    try std.testing.expectEqual(@as(usize, 1), loopIndex(4, 3));
+}
+
+test "loopIndex handles empty and single-item sequences" {
+    try std.testing.expectEqual(@as(usize, 0), loopIndex(0, 0));
+    try std.testing.expectEqual(@as(usize, 0), loopIndex(12, 0));
+    try std.testing.expectEqual(@as(usize, 0), loopIndex(12, 1));
 }
