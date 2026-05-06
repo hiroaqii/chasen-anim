@@ -24,6 +24,20 @@ pub fn loopIndex(frame: u64, len: usize) usize {
     return @intCast(frame % len);
 }
 
+/// Return an index that moves forward, then backward: 0, 1, 2, 1, 0...
+///
+/// This is useful for animations that should bounce between endpoints instead
+/// of jumping from the last item back to the first item. Empty and single-item
+/// sequences return zero.
+pub fn pingPongIndex(frame: u64, len: usize) usize {
+    if (len <= 1) return 0;
+
+    const period = (len - 1) * 2;
+    const pos: usize = @intCast(frame % period);
+    if (pos < len) return pos;
+    return period - pos;
+}
+
 test "progress returns normalized frame progress" {
     try std.testing.expectEqual(@as(f32, 0.0), progress(0, 10));
     try std.testing.expectEqual(@as(f32, 0.5), progress(5, 10));
@@ -55,4 +69,25 @@ test "loopIndex handles empty and single-item sequences" {
     try std.testing.expectEqual(@as(usize, 0), loopIndex(0, 0));
     try std.testing.expectEqual(@as(usize, 0), loopIndex(12, 0));
     try std.testing.expectEqual(@as(usize, 0), loopIndex(12, 1));
+}
+
+test "pingPongIndex moves forward then backward" {
+    const expected = [_]usize{ 0, 1, 2, 1, 0, 1, 2, 1 };
+
+    for (expected, 0..) |value, i| {
+        try std.testing.expectEqual(value, pingPongIndex(i, 3));
+    }
+}
+
+test "pingPongIndex alternates for two-item sequences" {
+    try std.testing.expectEqual(@as(usize, 0), pingPongIndex(0, 2));
+    try std.testing.expectEqual(@as(usize, 1), pingPongIndex(1, 2));
+    try std.testing.expectEqual(@as(usize, 0), pingPongIndex(2, 2));
+    try std.testing.expectEqual(@as(usize, 1), pingPongIndex(3, 2));
+}
+
+test "pingPongIndex handles empty and single-item sequences" {
+    try std.testing.expectEqual(@as(usize, 0), pingPongIndex(0, 0));
+    try std.testing.expectEqual(@as(usize, 0), pingPongIndex(12, 0));
+    try std.testing.expectEqual(@as(usize, 0), pingPongIndex(12, 1));
 }
