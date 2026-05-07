@@ -8,6 +8,7 @@ pub const progress = progress_mod.progress;
 pub const loopIndex = progress_mod.loopIndex;
 pub const pingPongIndex = progress_mod.pingPongIndex;
 pub const TransitionKind = transition.TransitionKind;
+pub const Transition = transition.Transition;
 
 test {
     _ = frame;
