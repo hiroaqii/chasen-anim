@@ -1,3 +1,13 @@
+//! Easing helpers for normalized animation progress.
+//!
+//! Easing functions take a progress value, clamp non-NaN inputs into
+//! `0.0...1.0`, and return a transformed progress value in the same range.
+//! This keeps callers from repeating range checks before every easing call.
+//!
+//! `NaN` is not handled specially. Because comparisons with `NaN` are false,
+//! `clamp01` returns it unchanged and easing functions propagate it through
+//! their normal arithmetic.
+
 const std = @import("std");
 
 /// Clamp a normalized animation value into the range 0.0...1.0.
