@@ -57,6 +57,15 @@ pub const Transition = struct {
             .max_frame = max_frame,
         };
     }
+
+    /// Advance by one transition frame and return the new frame number.
+    ///
+    /// The increment is saturating. Completion behavior is handled by later
+    /// progress and done helpers, not by `step`.
+    pub fn step(self: *Transition) u64 {
+        self.frame +|= 1;
+        return self.frame;
+    }
 };
 
 test "TransitionKind exposes initial transition categories" {
@@ -102,4 +111,26 @@ test "Transition init starts at frame zero" {
     try std.testing.expectEqual(TransitionKind.sweep, transition.kind);
     try std.testing.expectEqual(@as(u64, 0), transition.frame);
     try std.testing.expectEqual(@as(u64, 24), transition.max_frame);
+}
+
+test "Transition step advances one frame" {
+    const std = @import("std");
+    var transition = Transition.init(.fade, 12);
+
+    try std.testing.expectEqual(@as(u64, 1), transition.step());
+    try std.testing.expectEqual(@as(u64, 1), transition.frame);
+    try std.testing.expectEqual(@as(u64, 2), transition.step());
+    try std.testing.expectEqual(@as(u64, 2), transition.frame);
+}
+
+test "Transition step saturates at u64 max" {
+    const std = @import("std");
+    var transition: Transition = .{
+        .kind = .fade,
+        .frame = std.math.maxInt(u64),
+        .max_frame = std.math.maxInt(u64),
+    };
+
+    try std.testing.expectEqual(std.math.maxInt(u64), transition.step());
+    try std.testing.expectEqual(std.math.maxInt(u64), transition.frame);
 }
