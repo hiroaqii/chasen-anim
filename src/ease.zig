@@ -39,6 +39,21 @@ pub fn outQuad(t: f32) f32 {
     return 1.0 - remaining * remaining;
 }
 
+/// Quadratic ease-in-out.
+///
+/// `inOutQuad` starts slowly, speeds up near the middle, and slows again near
+/// the end by using an ease-in curve for the first half and an ease-out curve
+/// for the second half.
+pub fn inOutQuad(t: f32) f32 {
+    const p = clamp01(t);
+    if (p < 0.5) {
+        return 2.0 * p * p;
+    }
+
+    const remaining = -2.0 * p + 2.0;
+    return 1.0 - remaining * remaining / 2.0;
+}
+
 test "clamp01 clamps values into normalized range" {
     try std.testing.expectEqual(@as(f32, 0.0), clamp01(-1.0));
     try std.testing.expectEqual(@as(f32, 0.0), clamp01(0.0));
@@ -68,4 +83,14 @@ test "outQuad starts quickly and slows down" {
     try std.testing.expectEqual(@as(f32, 0.75), outQuad(0.5));
     try std.testing.expectEqual(@as(f32, 1.0), outQuad(1.0));
     try std.testing.expectEqual(@as(f32, 1.0), outQuad(2.0));
+}
+
+test "inOutQuad eases in and then out" {
+    try std.testing.expectEqual(@as(f32, 0.0), inOutQuad(-1.0));
+    try std.testing.expectEqual(@as(f32, 0.0), inOutQuad(0.0));
+    try std.testing.expectEqual(@as(f32, 0.125), inOutQuad(0.25));
+    try std.testing.expectEqual(@as(f32, 0.5), inOutQuad(0.5));
+    try std.testing.expectEqual(@as(f32, 0.875), inOutQuad(0.75));
+    try std.testing.expectEqual(@as(f32, 1.0), inOutQuad(1.0));
+    try std.testing.expectEqual(@as(f32, 1.0), inOutQuad(2.0));
 }
