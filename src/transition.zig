@@ -1,3 +1,5 @@
+const progress_mod = @import("progress.zig");
+
 /// Built-in transition categories supported by chasen-anim.
 ///
 /// `TransitionKind` only names the transition shape. It does not store frame
@@ -29,9 +31,8 @@ pub const TransitionKind = enum {
 /// Retained state for one transition.
 ///
 /// `Transition` tracks which transition is active, the current frame, and the
-/// frame count that represents completion. It does not advance itself yet;
-/// stepping and progress helpers are added separately so state shape can be
-/// reviewed on its own.
+/// frame count that represents completion. It can advance by one frame and
+/// report normalized progress; completion checks are added separately.
 pub const Transition = struct {
     /// Transition shape to apply.
     kind: TransitionKind = .none,
@@ -65,6 +66,14 @@ pub const Transition = struct {
     pub fn step(self: *Transition) u64 {
         self.frame +|= 1;
         return self.frame;
+    }
+
+    /// Return normalized transition progress in the range 0.0...1.0.
+    ///
+    /// This follows the shared `progress(frame, max_frame)` helper, including
+    /// treating `max_frame == 0` as already complete.
+    pub fn progress(self: Transition) f32 {
+        return progress_mod.progress(self.frame, self.max_frame);
     }
 };
 
@@ -133,4 +142,36 @@ test "Transition step saturates at u64 max" {
 
     try std.testing.expectEqual(std.math.maxInt(u64), transition.step());
     try std.testing.expectEqual(std.math.maxInt(u64), transition.frame);
+}
+
+test "Transition progress returns normalized frame progress" {
+    const std = @import("std");
+    const transition: Transition = .{
+        .kind = .fade,
+        .frame = 6,
+        .max_frame = 12,
+    };
+
+    try std.testing.expectEqual(@as(f32, 0.5), transition.progress());
+}
+
+test "Transition progress clamps completed and overrun frames" {
+    const std = @import("std");
+    try std.testing.expectEqual(@as(f32, 1.0), (Transition{
+        .kind = .fade,
+        .frame = 12,
+        .max_frame = 12,
+    }).progress());
+    try std.testing.expectEqual(@as(f32, 1.0), (Transition{
+        .kind = .fade,
+        .frame = 13,
+        .max_frame = 12,
+    }).progress());
+}
+
+test "Transition progress treats zero max frame as complete" {
+    const std = @import("std");
+    const transition = Transition.init(.none, 0);
+
+    try std.testing.expectEqual(@as(f32, 1.0), transition.progress());
 }
