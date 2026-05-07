@@ -45,6 +45,18 @@ pub const Transition = struct {
     ///
     /// A value of zero is reserved for later behavior definition.
     max_frame: u64 = 0,
+
+    /// Create a transition at frame zero.
+    ///
+    /// This only initializes retained state. It does not advance the transition
+    /// or define completion behavior for `max_frame == 0`.
+    pub fn init(kind: TransitionKind, max_frame: u64) Transition {
+        return .{
+            .kind = kind,
+            .frame = 0,
+            .max_frame = max_frame,
+        };
+    }
 };
 
 test "TransitionKind exposes initial transition categories" {
@@ -81,4 +93,13 @@ test "Transition stores explicit state" {
     try std.testing.expectEqual(TransitionKind.fade, transition.kind);
     try std.testing.expectEqual(@as(u64, 3), transition.frame);
     try std.testing.expectEqual(@as(u64, 12), transition.max_frame);
+}
+
+test "Transition init starts at frame zero" {
+    const std = @import("std");
+    const transition = Transition.init(.sweep, 24);
+
+    try std.testing.expectEqual(TransitionKind.sweep, transition.kind);
+    try std.testing.expectEqual(@as(u64, 0), transition.frame);
+    try std.testing.expectEqual(@as(u64, 24), transition.max_frame);
 }
