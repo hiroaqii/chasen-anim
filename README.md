@@ -48,6 +48,10 @@ frame.
   progress for one staggered item.
 - `stagger.isStarted(progress, index, count, delay)`: whether one staggered item
   has started.
+- `blink.phase(frame, period)`: normalized `0.0...1.0` position inside one
+  blink period.
+- `blink.isOn(frame, period, duty)`: whether the blink is on for the current
+  frame.
 
 ## Usage Pattern
 

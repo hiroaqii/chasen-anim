@@ -5,6 +5,7 @@ pub const transition = @import("transition.zig");
 pub const dissolve = @import("dissolve.zig");
 pub const sweep = @import("sweep.zig");
 pub const stagger = @import("stagger.zig");
+pub const blink = @import("blink.zig");
 
 pub const FrameCounter = frame.FrameCounter;
 pub const progress = progress_mod.progress;
@@ -21,4 +22,5 @@ test {
     _ = dissolve;
     _ = sweep;
     _ = stagger;
+    _ = blink;
 }
