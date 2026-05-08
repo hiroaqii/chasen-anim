@@ -74,12 +74,14 @@ overlay.
 Example usage lives in examples:
 
 - `examples/dissolve/main.zig`
+- `examples/sweep/main.zig`
 - `examples/transition/main.zig`
 
 Run examples from this repository:
 
 ```sh
 zig build run-dissolve
+zig build run-sweep
 zig build run-transition
 ```
 
@@ -101,5 +103,6 @@ Build individual examples:
 
 ```sh
 zig build check-dissolve
+zig build check-sweep
 zig build check-transition
 ```
