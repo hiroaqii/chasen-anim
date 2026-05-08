@@ -7,6 +7,7 @@ pub const sweep = @import("sweep.zig");
 pub const stagger = @import("stagger.zig");
 pub const blink = @import("blink.zig");
 pub const wave = @import("wave.zig");
+pub const glitch = @import("glitch.zig");
 
 pub const FrameCounter = frame.FrameCounter;
 pub const progress = progress_mod.progress;
@@ -25,4 +26,5 @@ test {
     _ = stagger;
     _ = blink;
     _ = wave;
+    _ = glitch;
 }
