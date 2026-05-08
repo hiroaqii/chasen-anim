@@ -83,6 +83,14 @@ pub const Transition = struct {
     pub fn done(self: Transition) bool {
         return self.progress() >= 1.0;
     }
+
+    /// Return how many frames remain until completion.
+    ///
+    /// Completed, overrun, and zero-duration transitions return zero.
+    pub fn remainingFrames(self: Transition) u64 {
+        if (self.frame >= self.max_frame) return 0;
+        return self.max_frame - self.frame;
+    }
 };
 
 test "TransitionKind exposes initial transition categories" {
@@ -214,4 +222,36 @@ test "Transition done treats zero max frame as complete" {
 
     try std.testing.expect((Transition{}).done());
     try std.testing.expect(Transition.init(.fade, 0).done());
+}
+
+test "Transition remainingFrames returns frames until completion" {
+    const std = @import("std");
+    const transition: Transition = .{
+        .kind = .fade,
+        .frame = 6,
+        .max_frame = 12,
+    };
+
+    try std.testing.expectEqual(@as(u64, 6), transition.remainingFrames());
+}
+
+test "Transition remainingFrames returns zero after completion and overrun" {
+    const std = @import("std");
+    try std.testing.expectEqual(@as(u64, 0), (Transition{
+        .kind = .fade,
+        .frame = 12,
+        .max_frame = 12,
+    }).remainingFrames());
+    try std.testing.expectEqual(@as(u64, 0), (Transition{
+        .kind = .fade,
+        .frame = 13,
+        .max_frame = 12,
+    }).remainingFrames());
+}
+
+test "Transition remainingFrames treats zero max frame as zero remaining" {
+    const std = @import("std");
+
+    try std.testing.expectEqual(@as(u64, 0), (Transition{}).remainingFrames());
+    try std.testing.expectEqual(@as(u64, 0), Transition.init(.fade, 0).remainingFrames());
 }
