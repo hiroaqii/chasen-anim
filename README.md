@@ -44,6 +44,10 @@ frame.
   for one column.
 - `sweep.isColumnActive(width, col, progress, direction)`: whether one column is
   active for the current progress.
+- `stagger.itemProgress(progress, index, count, delay)`: local `0.0...1.0`
+  progress for one staggered item.
+- `stagger.isStarted(progress, index, count, delay)`: whether one staggered item
+  has started.
 
 ## Usage Pattern
 
