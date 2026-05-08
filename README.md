@@ -52,6 +52,8 @@ frame.
   blink period.
 - `blink.isOn(frame, period, duty)`: whether the blink is on for the current
   frame.
+- `wave.phase(frame, period, index, offset)`: normalized `0.0...1.0` phase for
+  one indexed item.
 
 ## Usage Pattern
 
