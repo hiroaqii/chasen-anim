@@ -59,10 +59,34 @@ Apps can read query values such as `frame`, `max_frame`, `progress()`, `done()`,
 and `remainingFrames()` and pass them to their own logger, trace hook, or debug
 overlay.
 
+## Examples
+
+Example usage lives in examples:
+
+- `examples/transition/main.zig`
+
+Run examples from this repository:
+
+```sh
+zig build run-transition
+```
+
+Build all examples:
+
+```sh
+zig build check-examples
+```
+
 ## Development
 
 Run tests:
 
 ```sh
 zig build test
+```
+
+Build individual examples:
+
+```sh
+zig build check-transition
 ```
