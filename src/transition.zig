@@ -91,6 +91,14 @@ pub const Transition = struct {
         if (self.frame >= self.max_frame) return 0;
         return self.max_frame - self.frame;
     }
+
+    /// Return whether this transition has zero duration.
+    ///
+    /// Zero-duration transitions are treated as complete by `progress()` and
+    /// `done()`.
+    pub fn isZeroDuration(self: Transition) bool {
+        return self.max_frame == 0;
+    }
 };
 
 test "TransitionKind exposes initial transition categories" {
@@ -254,4 +262,22 @@ test "Transition remainingFrames treats zero max frame as zero remaining" {
 
     try std.testing.expectEqual(@as(u64, 0), (Transition{}).remainingFrames());
     try std.testing.expectEqual(@as(u64, 0), Transition.init(.fade, 0).remainingFrames());
+}
+
+test "Transition isZeroDuration is true for zero max frame" {
+    const std = @import("std");
+
+    try std.testing.expect((Transition{}).isZeroDuration());
+    try std.testing.expect(Transition.init(.fade, 0).isZeroDuration());
+}
+
+test "Transition isZeroDuration is false for non-zero max frame" {
+    const std = @import("std");
+
+    try std.testing.expect(!Transition.init(.fade, 12).isZeroDuration());
+    try std.testing.expect(!(Transition{
+        .kind = .fade,
+        .frame = 12,
+        .max_frame = 12,
+    }).isZeroDuration());
 }
