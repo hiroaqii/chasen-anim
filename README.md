@@ -87,6 +87,7 @@ overlay.
 
 Example usage lives in examples:
 
+- `examples/blink/main.zig`
 - `examples/dissolve/main.zig`
 - `examples/sweep/main.zig`
 - `examples/transition/main.zig`
@@ -94,6 +95,7 @@ Example usage lives in examples:
 Run examples from this repository:
 
 ```sh
+zig build run-blink
 zig build run-dissolve
 zig build run-sweep
 zig build run-transition
@@ -116,6 +118,7 @@ zig build test
 Build individual examples:
 
 ```sh
+zig build check-blink
 zig build check-dissolve
 zig build check-sweep
 zig build check-transition
