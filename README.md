@@ -35,6 +35,12 @@ Transition state does not draw, schedule timers, request frames, log, or trace.
 Applications decide when to step, how to draw, and when to request another
 frame.
 
+## Transition Helpers
+
+- `dissolve.threshold(seed, col, row)`: stable `0.0...1.0` threshold for one cell.
+- `dissolve.isActive(seed, col, row, progress)`: whether one cell is active for
+  the current progress.
+
 ## Usage Pattern
 
 `chasen-anim` computes animation state and numeric values. Applications or

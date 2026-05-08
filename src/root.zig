@@ -2,6 +2,7 @@ pub const frame = @import("frame.zig");
 pub const progress_mod = @import("progress.zig");
 pub const ease = @import("ease.zig");
 pub const transition = @import("transition.zig");
+pub const dissolve = @import("dissolve.zig");
 
 pub const FrameCounter = frame.FrameCounter;
 pub const progress = progress_mod.progress;
@@ -15,4 +16,5 @@ test {
     _ = progress_mod;
     _ = ease;
     _ = transition;
+    _ = dissolve;
 }
