@@ -31,8 +31,8 @@ pub const TransitionKind = enum {
 /// Retained state for one transition.
 ///
 /// `Transition` tracks which transition is active, the current frame, and the
-/// frame count that represents completion. It can advance by one frame and
-/// report normalized progress; completion checks are added separately.
+/// frame count that represents completion. It can advance by one frame, report
+/// normalized progress, and report whether that progress has completed.
 pub const Transition = struct {
     /// Transition shape to apply.
     kind: TransitionKind = .none,
@@ -61,8 +61,8 @@ pub const Transition = struct {
 
     /// Advance by one transition frame and return the new frame number.
     ///
-    /// The increment is saturating. Completion behavior is handled by later
-    /// progress and done helpers, not by `step`.
+    /// The increment is saturating. `step` does not stop at completion; callers
+    /// can use `done()` to decide whether to request another frame.
     pub fn step(self: *Transition) u64 {
         self.frame +|= 1;
         return self.frame;
@@ -74,6 +74,14 @@ pub const Transition = struct {
     /// treating `max_frame == 0` as already complete.
     pub fn progress(self: Transition) f32 {
         return progress_mod.progress(self.frame, self.max_frame);
+    }
+
+    /// Return whether the transition has reached completion.
+    ///
+    /// This follows `progress()`: overrun frames and `max_frame == 0` are both
+    /// treated as complete.
+    pub fn done(self: Transition) bool {
+        return self.progress() >= 1.0;
     }
 };
 
@@ -174,4 +182,36 @@ test "Transition progress treats zero max frame as complete" {
     const transition = Transition.init(.none, 0);
 
     try std.testing.expectEqual(@as(f32, 1.0), transition.progress());
+}
+
+test "Transition done is false before completion" {
+    const std = @import("std");
+    const transition: Transition = .{
+        .kind = .fade,
+        .frame = 6,
+        .max_frame = 12,
+    };
+
+    try std.testing.expect(!transition.done());
+}
+
+test "Transition done is true at completion and after overrun" {
+    const std = @import("std");
+    try std.testing.expect((Transition{
+        .kind = .fade,
+        .frame = 12,
+        .max_frame = 12,
+    }).done());
+    try std.testing.expect((Transition{
+        .kind = .fade,
+        .frame = 13,
+        .max_frame = 12,
+    }).done());
+}
+
+test "Transition done treats zero max frame as complete" {
+    const std = @import("std");
+
+    try std.testing.expect((Transition{}).done());
+    try std.testing.expect(Transition.init(.fade, 0).done());
 }
