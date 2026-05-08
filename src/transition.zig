@@ -44,13 +44,12 @@ pub const Transition = struct {
 
     /// Frame count that represents completion.
     ///
-    /// A value of zero is reserved for later behavior definition.
+    /// A value of zero represents a zero-duration transition.
     max_frame: u64 = 0,
 
     /// Create a transition at frame zero.
     ///
-    /// This only initializes retained state. It does not advance the transition
-    /// or define completion behavior for `max_frame == 0`.
+    /// This only initializes retained state. It does not advance the transition.
     pub fn init(kind: TransitionKind, max_frame: u64) Transition {
         return .{
             .kind = kind,
@@ -98,6 +97,14 @@ pub const Transition = struct {
     /// `done()`.
     pub fn isZeroDuration(self: Transition) bool {
         return self.max_frame == 0;
+    }
+
+    /// Update the frame count that represents completion.
+    ///
+    /// This does not reset or clamp the current frame. Existing query helpers
+    /// handle completed, overrun, and zero-duration states.
+    pub fn setMaxFrame(self: *Transition, max_frame: u64) void {
+        self.max_frame = max_frame;
     }
 };
 
@@ -280,4 +287,46 @@ test "Transition isZeroDuration is false for non-zero max frame" {
         .frame = 12,
         .max_frame = 12,
     }).isZeroDuration());
+}
+
+test "Transition setMaxFrame updates duration without resetting frame" {
+    const std = @import("std");
+    var transition: Transition = .{
+        .kind = .fade,
+        .frame = 6,
+        .max_frame = 12,
+    };
+
+    transition.setMaxFrame(24);
+
+    try std.testing.expectEqual(@as(u64, 6), transition.frame);
+    try std.testing.expectEqual(@as(u64, 24), transition.max_frame);
+    try std.testing.expectEqual(@as(f32, 0.25), transition.progress());
+    try std.testing.expectEqual(@as(u64, 18), transition.remainingFrames());
+}
+
+test "Transition setMaxFrame can make current frame completed" {
+    const std = @import("std");
+    var transition: Transition = .{
+        .kind = .fade,
+        .frame = 6,
+        .max_frame = 12,
+    };
+
+    transition.setMaxFrame(3);
+
+    try std.testing.expect(transition.done());
+    try std.testing.expectEqual(@as(f32, 1.0), transition.progress());
+    try std.testing.expectEqual(@as(u64, 0), transition.remainingFrames());
+}
+
+test "Transition setMaxFrame can make transition zero-duration" {
+    const std = @import("std");
+    var transition = Transition.init(.fade, 12);
+
+    transition.setMaxFrame(0);
+
+    try std.testing.expect(transition.isZeroDuration());
+    try std.testing.expect(transition.done());
+    try std.testing.expectEqual(@as(u64, 0), transition.remainingFrames());
 }
