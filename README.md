@@ -58,6 +58,8 @@ frame.
   pulse cycle.
 - `pulse.valueFromPhase(phase)`: triangle `0.0...1.0...0.0` value for one
   normalized phase.
+- `typewriter.visibleCount(progress, total)`: number of visible items for
+  typewriter-style reveals.
 - `glitch.sample(seed, frame, col, row)`: deterministic `0.0...1.0` sample for
   one cell at one frame.
 - `glitch.isActive(seed, frame, col, row, probability)`: whether one cell should

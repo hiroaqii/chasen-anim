@@ -8,6 +8,7 @@ pub const stagger = @import("stagger.zig");
 pub const blink = @import("blink.zig");
 pub const wave = @import("wave.zig");
 pub const pulse = @import("pulse.zig");
+pub const typewriter = @import("typewriter.zig");
 pub const glitch = @import("glitch.zig");
 
 pub const FrameCounter = frame.FrameCounter;
@@ -28,5 +29,6 @@ test {
     _ = blink;
     _ = wave;
     _ = pulse;
+    _ = typewriter;
     _ = glitch;
 }
