@@ -87,18 +87,20 @@ overlay.
 
 Example usage lives in examples:
 
-- `examples/blink/main.zig`
+- `examples/transition/main.zig`
 - `examples/dissolve/main.zig`
 - `examples/sweep/main.zig`
-- `examples/transition/main.zig`
+- `examples/blink/main.zig`
+- `examples/wave/main.zig`
 
 Run examples from this repository:
 
 ```sh
-zig build run-blink
+zig build run-transition
 zig build run-dissolve
 zig build run-sweep
-zig build run-transition
+zig build run-blink
+zig build run-wave
 ```
 
 Build all examples:
@@ -118,8 +120,9 @@ zig build test
 Build individual examples:
 
 ```sh
-zig build check-blink
+zig build check-transition
 zig build check-dissolve
 zig build check-sweep
-zig build check-transition
+zig build check-blink
+zig build check-wave
 ```
