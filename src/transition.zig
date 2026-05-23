@@ -15,6 +15,9 @@ pub const TransitionKind = enum {
     /// Temporarily replace parts of the output with noisy visual fragments.
     glitch,
 
+    /// Reveal content through falling code-like visual fragments.
+    code_rain,
+
     /// Reveal cells in a deterministic scattered order.
     dissolve,
 
@@ -125,6 +128,7 @@ test "TransitionKind exposes initial transition categories" {
         .none,
         .fade,
         .glitch,
+        .code_rain,
         .dissolve,
         .sweep,
         .wipe,
@@ -135,7 +139,7 @@ test "TransitionKind exposes initial transition categories" {
         .lines_cross,
     };
 
-    try @import("std").testing.expectEqual(@as(usize, 11), kinds.len);
+    try @import("std").testing.expectEqual(@as(usize, 12), kinds.len);
 }
 
 test "Transition defaults to no transition at frame zero" {
