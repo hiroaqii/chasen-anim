@@ -27,6 +27,12 @@ pub const TransitionKind = enum {
     /// Reveal content behind a moving scanline.
     scanline,
 
+    /// Reveal content from the center outward.
+    iris,
+
+    /// Reveal content by opening a centered shutter band.
+    shutter,
+
     /// Reveal horizontal or vertical lines in sequence.
     lines,
 
@@ -123,11 +129,13 @@ test "TransitionKind exposes initial transition categories" {
         .sweep,
         .wipe,
         .scanline,
+        .iris,
+        .shutter,
         .lines,
         .lines_cross,
     };
 
-    try @import("std").testing.expectEqual(@as(usize, 9), kinds.len);
+    try @import("std").testing.expectEqual(@as(usize, 11), kinds.len);
 }
 
 test "Transition defaults to no transition at frame zero" {
