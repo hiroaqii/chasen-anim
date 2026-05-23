@@ -21,6 +21,12 @@ pub const TransitionKind = enum {
     /// Reveal content along one direction over time.
     sweep,
 
+    /// Reveal content by wiping a full rectangular area across the frame.
+    wipe,
+
+    /// Reveal content behind a moving scanline.
+    scanline,
+
     /// Reveal horizontal or vertical lines in sequence.
     lines,
 
@@ -115,11 +121,13 @@ test "TransitionKind exposes initial transition categories" {
         .glitch,
         .dissolve,
         .sweep,
+        .wipe,
+        .scanline,
         .lines,
         .lines_cross,
     };
 
-    try @import("std").testing.expectEqual(@as(usize, 7), kinds.len);
+    try @import("std").testing.expectEqual(@as(usize, 9), kinds.len);
 }
 
 test "Transition defaults to no transition at frame zero" {
