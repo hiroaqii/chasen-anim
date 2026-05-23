@@ -27,6 +27,9 @@ pub const TransitionKind = enum {
     /// Reveal content by wiping a full rectangular area across the frame.
     wipe,
 
+    /// Reveal content by settling wavy row distortion back into place.
+    warp,
+
     /// Reveal content behind a moving scanline.
     scanline,
 
@@ -132,6 +135,7 @@ test "TransitionKind exposes initial transition categories" {
         .dissolve,
         .sweep,
         .wipe,
+        .warp,
         .scanline,
         .iris,
         .shutter,
@@ -139,7 +143,7 @@ test "TransitionKind exposes initial transition categories" {
         .lines_cross,
     };
 
-    try @import("std").testing.expectEqual(@as(usize, 12), kinds.len);
+    try @import("std").testing.expectEqual(@as(usize, 13), kinds.len);
 }
 
 test "Transition defaults to no transition at frame zero" {
