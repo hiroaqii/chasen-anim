@@ -3,7 +3,7 @@ const std = @import("std");
 /// Monotonically increasing frame counter for deterministic animation steps.
 ///
 /// `FrameCounter` stores only a frame number. It does not know about wall-clock
-/// time, timers, `ctx.requestFrame()`, or any Chasen runtime state. The app or
+/// time, timers, `ctx.frame().request()`, or any Chasen runtime state. The app or
 /// runtime decides when an animation tick happens, then calls `step()` once for
 /// that tick.
 ///
