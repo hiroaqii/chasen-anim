@@ -8,80 +8,53 @@ The Zig module name is `chasen_anim`.
 `chasen-anim` is std-only. It does not depend on Chasen core, `chasen-ui`,
 a renderer, or terminal state.
 
-## Utilities
+## Requirements
 
-- `FrameCounter`: deterministic saturating frame counter.
-- `progress(frame, max_frame)`: normalized `0.0...1.0` progress.
-- `loopIndex(frame, len)`: wrap through fixed-length frame lists.
-- `pingPongIndex(frame, len)`: bounce through fixed-length frame lists.
+Zig 0.16.0.
 
-## Easing
+## Current Status
 
-- `ease.linear(t)`: constant-speed easing.
-- `ease.inQuad(t)`: quadratic ease-in.
-- `ease.outQuad(t)`: quadratic ease-out.
-- `ease.inOutQuad(t)`: quadratic ease-in-out.
+Experimental; the API may change. The package provides deterministic values and
+transition state, not a scheduler or ready-made visual effects.
 
-Easing functions clamp non-NaN inputs into `0.0...1.0`. `NaN` is not handled
-specially and propagates.
+## How It Fits With Chasen
 
-## Transitions
+The application owns time and frame scheduling. `chasen-anim` turns a frame or
+phase into values; a renderer or a package such as
+[chasen-graphics](https://github.com/hiroaqii/chasen-graphics) turns those values
+into output. Chasen is not required to use this package.
 
-- `TransitionKind`: built-in transition categories.
-- `Transition`: retained transition state with `init`, `step`, `progress`,
-  `done`, `remainingFrames`, `isZeroDuration`, and `setMaxFrame`.
-
-Transition state does not draw, schedule timers, request frames, log, or trace.
-Applications decide when to step, how to draw, and when to request another
-frame.
-
-## Transition Helpers
-
-- `dissolve.threshold(seed, col, row)`: stable `0.0...1.0` threshold for one cell.
-- `dissolve.isActive(seed, col, row, progress)`: whether one cell is active for
-  the current progress.
-- `sweep.columnThreshold(width, col, direction)`: stable `0.0...1.0` threshold
-  for one column.
-- `sweep.isColumnActive(width, col, progress, direction)`: whether one column is
-  active for the current progress.
-- `stagger.itemProgress(progress, index, count, delay)`: local `0.0...1.0`
-  progress for one staggered item.
-- `stagger.isStarted(progress, index, count, delay)`: whether one staggered item
-  has started.
-- `blink.phase(frame, period)`: normalized `0.0...1.0` position inside one
-  blink period.
-- `blink.isOn(frame, period, duty)`: whether the blink is on for the current
-  frame.
-- `wave.phase(frame, period, index, offset)`: normalized `0.0...1.0` phase for
-  one indexed item.
-- `pulse.value(frame, period)`: repeating `0.0...1.0...0.0` value for one
-  pulse cycle.
-- `pulse.valueFromPhase(phase)`: triangle `0.0...1.0...0.0` value for one
-  normalized phase.
-- `typewriter.visibleCount(progress, total)`: number of visible items for
-  typewriter-style reveals.
-- `glitch.sample(seed, frame, col, row)`: deterministic `0.0...1.0` sample for
-  one cell at one frame.
-- `glitch.isActive(seed, frame, col, row, probability)`: whether one cell should
-  glitch for the current probability.
-
-## Usage Pattern
+## Usage
 
 `chasen-anim` computes animation state and numeric values. Applications or
 higher-level packages decide how to render those values.
 
 ```zig
+const std = @import("std");
 const anim = @import("chasen_anim");
 
-var transition = anim.Transition.init(.fade, 30);
+// This example prints a small transition timeline.
+// chasen-anim does not draw frames or schedule ticks by itself; the app owns
+// that loop and asks chasen-anim for deterministic values each step.
+pub fn main() void {
+    var transition = anim.Transition.init(.fade, 8);
 
-_ = transition.step();
+    std.debug.print("frame progress eased done\n", .{});
 
-const p = transition.progress();
-const eased = anim.ease.outQuad(p);
+    while (true) {
+        const p = transition.progress();
+        const eased = anim.ease.outQuad(p);
 
-if (!transition.done()) {
-    // Request another frame from the app/runtime.
+        std.debug.print("{d:>5} {d:>8.3} {d:>5.3} {}\n", .{
+            transition.frame,
+            p,
+            eased,
+            transition.done(),
+        });
+
+        if (transition.done()) break;
+        _ = transition.step();
+    }
 }
 ```
 
@@ -89,15 +62,25 @@ Apps can read query values such as `frame`, `max_frame`, `progress()`, `done()`,
 and `remainingFrames()` and pass them to their own logger, trace hook, or debug
 overlay.
 
+## API Guide
+
+See the [Animation API Guide](docs/ANIMATION.md) for available helpers and their
+behavior:
+
+- [Frame counters, progress, and frame indices](docs/ANIMATION.md#utilities)
+- [Easing](docs/ANIMATION.md#easing)
+- [Transition state](docs/ANIMATION.md#transitions)
+- [Dissolve, sweep, stagger, blink, wave, pulse, typewriter, and glitch](docs/ANIMATION.md#transition-helpers)
+
 ## Examples
 
-Example usage lives in examples:
+These examples print animation values; they do not start a terminal UI:
 
-- `examples/transition/main.zig`
-- `examples/dissolve/main.zig`
-- `examples/sweep/main.zig`
-- `examples/blink/main.zig`
-- `examples/wave/main.zig`
+- [transition](examples/transition/main.zig)
+- [dissolve](examples/dissolve/main.zig)
+- [sweep](examples/sweep/main.zig)
+- [blink](examples/blink/main.zig)
+- [wave](examples/wave/main.zig)
 
 Run examples from this repository:
 
@@ -109,26 +92,18 @@ zig build run-blink
 zig build run-wave
 ```
 
-Build all examples:
-
-```sh
-zig build check-examples
-```
-
 ## Development
 
-Run tests:
+Run tests and build all five examples from a repository checkout:
 
 ```sh
-zig build test
+zig build test check-examples --summary all
 ```
 
-Build individual examples:
+Run tests alone with `zig build test`. Build an individual example with
+`zig build check-<name>`, such as `zig build check-transition`.
+No external package dependencies or sibling checkouts are required.
 
-```sh
-zig build check-transition
-zig build check-dissolve
-zig build check-sweep
-zig build check-blink
-zig build check-wave
-```
+## License
+
+See [LICENSE](LICENSE).
