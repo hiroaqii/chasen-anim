@@ -24,10 +24,46 @@ phase into values; a renderer or a package such as
 [chasen-graphics](https://github.com/hiroaqii/chasen-graphics) turns those values
 into output. Chasen is not required to use this package.
 
+## Installation
+
+From your application's Zig project:
+
+```sh
+zig fetch --save git+https://github.com/hiroaqii/chasen-anim.git
+```
+
+Add the dependency to `build.zig`. This complete example builds `src/main.zig`:
+
+```zig
+const std = @import("std");
+
+pub fn build(b: *std.Build) void {
+    const target = b.standardTargetOptions(.{});
+    const optimize = b.standardOptimizeOption(.{});
+    const anim = b.dependency("chasen_anim", .{
+        .target = target,
+        .optimize = optimize,
+    });
+    const exe = b.addExecutable(.{
+        .name = "animation-demo",
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("src/main.zig"),
+            .target = target,
+            .optimize = optimize,
+            .imports = &.{.{ .name = "chasen_anim", .module = anim.module("chasen_anim") }},
+        }),
+    });
+    b.installArtifact(exe);
+}
+```
+
 ## Usage
 
 `chasen-anim` computes animation state and numeric values. Applications or
 higher-level packages decide how to render those values.
+
+Save this as `src/main.zig`, then run `zig build` and
+`./zig-out/bin/animation-demo`:
 
 ```zig
 const std = @import("std");
