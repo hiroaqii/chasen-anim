@@ -10,7 +10,7 @@ a renderer, or terminal state.
 
 ## Requirements
 
-Zig 0.16.0.
+Zig 0.17.0.
 
 ## Current Status
 
@@ -139,6 +139,8 @@ zig build test check-examples --summary all
 Run tests alone with `zig build test`. Build an individual example with
 `zig build check-<name>`, such as `zig build check-transition`.
 No external package dependencies or sibling checkouts are required.
+
+CI runs these checks on Ubuntu and macOS using Zig 0.17.0.
 
 ## License
 

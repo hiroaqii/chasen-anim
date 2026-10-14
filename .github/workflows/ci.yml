@@ -14,9 +14,13 @@ concurrency:
 
 jobs:
   test:
-    name: Zig 0.16.0
-    runs-on: ubuntu-latest
+    name: Zig 0.17.0 (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
 
     steps:
       - name: Checkout
@@ -27,7 +31,7 @@ jobs:
       - name: Setup Zig
         uses: mlugg/setup-zig@v2
         with:
-          version: 0.16.0
+          version: 0.17.0
 
       - name: Test
         env:

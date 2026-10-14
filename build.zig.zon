@@ -2,7 +2,7 @@
     .name = .chasen_anim,
     .version = "0.1.0",
     .fingerprint = 0x1e9ae8f03e69a610, // Changing this has security and trust implications.
-    .minimum_zig_version = "0.16.0",
+    .minimum_zig_version = "0.17.0",
     .dependencies = .{},
     .paths = .{
         "build.zig",
