@@ -10,7 +10,7 @@ a renderer, or terminal state.
 
 ## Requirements
 
-Zig 0.16.0.
+Zig 0.17.1.
 
 ## Current Status
 
